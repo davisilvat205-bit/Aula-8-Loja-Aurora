@@ -1,0 +1,83 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Loja Aurora</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>LOJA AURORA</h1>
+
+        <p>Consulte seu endereço pelo CEP</p>
+
+        <input
+            type="text"
+            id="cep"
+            placeholder="Digite seu CEP"
+            maxlength="9"
+        >
+
+        <button onclick="consultarCEP()">
+            Consultar CEP
+        </button>
+
+        <div id="resultado"></div>
+
+    </div>
+
+    <script>
+        async function consultarCEP() {
+
+            const cep = document.getElementById("cep").value
+                .replace(/\D/g, "");
+
+            const resultado = document.getElementById("resultado");
+
+            if (cep.length !== 8) {
+                resultado.innerHTML =
+                    "<p class='erro'>Digite um CEP válido!</p>";
+                return;
+            }
+
+            resultado.innerHTML = "Consultando CEP...";
+
+            try {
+
+                const resposta = await fetch(
+                    `https://viacep.com.br/ws/${cep}/json/`
+                );
+
+                const dados = await resposta.json();
+
+                if (dados.erro) {
+                    resultado.innerHTML =
+                        "<p class='erro'>CEP não encontrado!</p>";
+                    return;
+                }
+
+                resultado.innerHTML = `
+                    <h3>Endereço encontrado:</h3>
+                    <strong>CEP:</strong> ${dados.cep}<br>
+                    <strong>Rua:</strong> ${dados.logradouro}<br>
+                    <strong>Bairro:</strong> ${dados.bairro}<br>
+                    <strong>Cidade:</strong> ${dados.localidade}<br>
+                    <strong>Estado:</strong> ${dados.uf}
+                `;
+
+            } catch (erro) {
+
+                resultado.innerHTML =
+                    "<p class='erro'>Erro ao consultar o CEP. Tente novamente!</p>";
+
+            }
+        }
+    </script>
+
+</body>
+</html>
